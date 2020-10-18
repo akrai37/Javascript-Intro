@@ -1,5 +1,5 @@
 
-///////////////////////////////////////
+////////////////////////////////////////
 //Let and const    Note:-'Let' and 'const' follow block scope rules whereas 'var' follows function scope. It means 'let' and 'scope' are limited to a block(maybe an if statment or a loop etc. just within {} parenthesis) but var has fn scope so, an element can be used anywhere in the fn.
 /*
 var nameES5='camila stokes';
