@@ -23,7 +23,7 @@ function license5(passed){
 };
 license5(true);
 
-//ES6
+ //ES6 
 function license6(passed){
     if(passed){
       let firstname='Karim';
