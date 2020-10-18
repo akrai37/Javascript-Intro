@@ -1,5 +1,5 @@
 
-//*************Function Constructor********************
+//*************Function Constructor*********************
 //check 'js_notes' for more information. Few points to notice about- 1.what are Prototypes 2.difference betn 'prototype' and 'constructor'.
 
 /*
