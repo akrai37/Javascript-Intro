@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta name="X-UA-Compatible" content="ie=edge">
+     <title>Asynchronous JavaScript</title>
+  </head>
+  <body>
+      <h1>Asynchronous JavaScript</h1>
+      <script>
+            //note-1:-A callback function is a function passed as an argument and executed inside another function, for example:
+
+            //function a() {
+            //    console.log("I've been passed as an argument!");
+            //}
+
+            //function b(callback) {
+            //    a();
+            //}
+
+            //b(a);
+            //In this example function a is passed as an argument to function b and this is called a callback function*/
+
+            //note-2:-About Asynchronous JS working, the functions from the message queue will be executed only if the execution stack is empty.
+
+//START--------------------------------------------------------------------------------------------------------------------
+
+/*
+            const second= ()=> {
+                setTimeout(()=>{
+                  console.log('This is the Asynchronous fn');
+                }, 3000);
+            }
+
+           const first= ()=> {
+               console.log('This the first function');
+               second();
+               console.log('The end');
+           }
+
+           first();
+*/
+
+
+
+/*
+//Nested setTimeout()-------------------------------------------
+//Disadvantage:- It leads to callback hell which, basically means the triangular shape that our code takes when we have a lot of nested callback fns.It can be avoided with the 'Promise' that is discussed later.
+
+           function getrecipe(){
+
+               setTimeout(()=>{
+                      const recipeValue=[524,879,371,696];
+                      console.log(recipeValue);
+
+                      setTimeout(id=>{
+                              const recipe={
+                                title:'Haka Noodles',chef:'Cheng'
+                              }
+                              console.log(`${id} and ${recipe.chef}`);
+
+                              setTimeout((recipeoftitle,firstfnValue)=>{
+                                 const recipe2={title:'pizza',chef:'Nicholo'}
+                                 console.log(`${recipe2.title}, ${recipe2.chef}, ${recipeoftitle} and ${firstfnValue}`);
+                              },1000, recipe.title, recipeValue[1]);
+
+                      }, 1500, recipeValue[2]);
+               }, 1500);
+           }
+
+           getrecipe();
+*/
+
+
+
+/*
+//PROMISES--------------------------------------------------------Helps to avoid callback hell for Asynchronous fns. With the help of 'Promise', we can ue '.then' method, which allows us to maintain the indentation.
+
+          const getIDs= new Promise((resolve, reject)=> { //'Promise' has 2 arguments, 1 is the 'resolve' and the other is 'reject'. If the fn returns 'resolve' to the '.then' argument when the fn is called, it means the fn is working correctly & if it returns 'reject' to '.catch' as an argument,cont.
+              setTimeout(()=>{                            // during the calling, it means there is some error in the code.
+                resolve([524,879,371,696]);
+              }, 1500);
+          });
+
+          const gettingrecipe= recID=> {
+              return new Promise((resolve, reject)=> {
+                   setTimeout(ID=>{
+                        const recipe= {title:'Haka Noodles',chef:'Cheng'};
+                        resolve(`${ID}:${recipe.title}`);
+                   }, 1500, recID);
+              });
+          }
+
+          const getchef= chef=> {
+             return new Promise((resolve,reject)=>{
+                  setTimeout(chefname=>{
+                       const details={title:'Italian Pizza',chef:'Raku'};
+                       resolve(`${chefname}:${details.title}`);
+                  }, 1500, chef);
+             });
+          }
+
+          getIDs                       //The first fn is called.
+          .then(returnedIDs=>{         //'.then' contains the argument which is the 'resolve' returned from the function for which '.then' has been used. Here, we are passing 'resolve' as an argument into an inside fn of '.then'.
+              console.log(returnedIDs);
+              return gettingrecipe(returnedIDs[2]); //we are calling the fn 'gettingrecipe()' which takes one of the elements of 'returnedIDs'(which is the returned 'resolve' of fn 'getIDs'). Then, the returned 'resolve' of 'gettingrecipe()'.cont.
+          })                                        // will be returned to its '.then' as an argument.
+          .then(recipeA=>{             //'recipeA' is representing the 'resolve' of of its fn i.e gettingrecipe().
+              console.log(recipeA);
+              return getchef('Raku');
+          })
+          .then(chefdetails=>{
+              console.log(chefdetails);
+          })
+          .catch(error=>{            //if there is some error in the code, '.catch' will be returned for that fn, and not '.then'
+            console.log('error! because we have received reject, and not resolve because there is some problem with your code');
+          })
+*/
+
+
+
+/*
+//Async/ Await------------------------------------------------------------They provide better ways to call PROMISES and the alternatives of using '.then'
+
+  //The below 3 fns are same as defined in PROMISES section.
+          const getIDs= new Promise((resolve, reject)=> {     //'Promise' has 2 arguments, 1 is the 'resolve' and the other is 'reject'. If the fn returns 'resolve' to the '.then' argument when the fn is called, it means the fn is working correctly & if it returns 'reject' to '.catch' as an argument,cont.
+              setTimeout(()=>{                                // during the calling, it means there is some error in the code.
+                resolve([524,879,371,696]);
+              }, 1500);
+          });
+
+          const gettingrecipe= recID=> {
+              return new Promise((resolve, reject)=> {
+                   setTimeout(ID=>{
+                        const recipe= {title:'Haka Noodles',chef:'Cheng'};
+                        resolve(`${ID}:${recipe.title}`);
+                   }, 1500, recID);
+              });
+          }
+
+          const getchef= chef=> {
+             return new Promise((resolve,reject)=>{
+                  setTimeout(chefname=>{
+                       const details={title:'Italian Pizza',chef:'Raku'};
+                       resolve(`${chefname}:${details.title}`);
+                  }, 1500, chef);
+             });
+          }
+
+    //Note:- The 'async' keyword merely tells that the function will return a promise object. Now you can return that promise after a primitive async function (like the setTimeOut) fires an event. The 'await' keyword makes JavaScript wait until that promise settles and returns its result.
+
+          async function getRecipeAW(){ //With 'async' fn, we just need one fn in which we can call all the 'PROMISES' or the fns in which we have our PROMISES.No, need to use '.then' unless we are returning something from this fn.
+             const IDs= await getIDs;
+             console.log(IDs);
+             const recipeA= await gettingrecipe(IDs[2]);
+             console.log(recipeA);
+             const chefdetails=await getchef('Raku');
+             console.log(chefdetails);
+
+             return recipeA;
+          }
+             //const recipeReturned= getRecipeAW();  //This way of calling and storing the returned value of 'await' fn won't work because it is an Asynchronous fn, so it will be processed after the execution stack is empty.Therfore, it won't be able to log anything and will just show on the screen 'Promise waiting'.cont.
+             //console.log(recipeReturned);          //Its soln is to use '.then' with the 'await' fn in order to use or process the returned value,if needed.(for ex- to print the value)
+             getRecipeAW().then(result=> console.log(`${result} is the returned value of async function`));
+
+             //Note:-'await' functions works after the promise is resolved but what happens if its rejected? Then the function will generate an error. To prevent that you can use a try/catch statement to continue if an error is generated.
+*/
+
+
+
+/*
+//Using AJAX by calling the API of a weather updating site using 'fetch' method with the help of 'PROMISES'.--------------------------------------------------------
+//OR Making AJAX calls with fetch and Promises.
+            function gettingWeather(){
+                fetch('https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/2487956/') //'fetch' is used to fetch the url of the API which will be accessed as a response(returned data) using '.then()'
+                .then(result=>{
+                   console.log(result);
+                   return result.json();  //from google:- JavaScript Object Notation (JSON) is a standard text-based format for representing structured data based on JavaScript object syntax. It is commonly used for transmitting data in web applications (e.g., sending some data from the server to the client, so it can be displayed on a web page, or vice versa)
+                })
+                .then(result2=>{
+                   //console.log(result2);
+                   const today=result2.consolidated_weather[0];
+                   console.log(`The city is ${result2.title} with the min. temp. standing at ${today.min_temp}C and max. temp. at ${today.max_temp}C.`);
+                 })
+                .catch(error=> console.log(`Something is wrong with the code.`));
+            }
+           gettingWeather();
+
+          //Explanation:-The first method is used to call the json() method on the response that we got from the server, and the second one is used to just print the data parsed to a javascript object to the console.cont.
+          //The thing is that the json() method (result.json()) is asynchronous as well, so we need to handle it the same as other async actions, which is why we use '.then()'
+
+
+
+
+//Making AJAX calls with fetch and async/await--------------------------------------------------------------------------
+           async function getWeatherAsync(){ //using 'async' fn and 'await' method are simpler to write and understand than using '.then'.
+                try{
+                    const resultA=await fetch('https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/2487956/')
+                    console.log(resultA);
+                    const data= await resultA.json();
+                    console.log(data);
+                    const tomorrow=data.consolidated_weather[1];
+                    console.log(`The city is ${data.title} with the min. temp. standing at ${tomorrow.min_temp}C and max. temp. at ${tomorrow.max_temp}C.`);
+                    return data;
+                }
+                catch(error){
+                    console.log(error);
+                }
+            };
+
+           //getWeatherAsync();
+           getWeatherAsync().then(returnedValue=>{
+             console.log(`${returnedValue.timezone} is the value we are accessing from the json returned when e call its base fn.`);
+           })
+*/
+
+      </script>
+  </body>
+</html>
