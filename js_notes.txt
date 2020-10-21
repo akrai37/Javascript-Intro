@@ -1,0 +1,469 @@
+Variable Object:-
+
+Imagine we have this function
+
+function test(param1) {
+ 
+    var a = 'Hello';
+    var b = 'Hi';
+ 
+}
+ 
+test('Good morning')
+When we call this function, the new execution context is created and put on the top of the stack. During the creation phase, the variable object is created and associated with this execution context.
+
+The variable object contains all the parameters and variables, as well as the references to functions declared inside of the function. In this case, the test() function has one parameter and two local variables. The variable object for the execution context of the test() function would look like
+
+var variableObject = {
+        arguments: {
+            0: "Good morning",
+            length: 1
+        },
+        param1: "Good morning",
+        a: "Hello",
+        b: "Hi"
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Research more about execution context and scope chain.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Its about practice. Your not going to learn JS just because you finished the course. You need to practice these concepts by applying them and the best place to do that is coding challenge websites like codewars (this is a bit advance so try but if its hard rather come back to it) and also edabit (this is nice for beginners) and do 4-5 challenges a day. Whats nice about edabit is they have a resourses tab on the question that will tell you the functions you should research to help solve the problem, so they do all the hard work for you but in some cases there arent any so you will have to google like I mentioned above
+
+
+-------------------------------------------------------------------------------------------------------------
+BELOW IS NOTES FOR ADVANCED JAVASCRIPT MODULE.
+-------------------------------------------------------------------------------------------------------------
+
+1.
+(Constructors and Prototypes)-
+
+Constructor:
+
+Person is a blueprint for other person objects. It is a constructor which is called when creating a new Person, taking values for (some of its) properties as parameters.
+
+So using your example:
+
+Person(name,yearOfBirth,job) {
+    this.name = name;
+    this.yearOfBirth = yearOfBirth;
+    this.job = job;
+}
+Here Person is a constructor that can be used to create new objects. It holds the blueprint for those objects, including the default properties for the new object: this.name,  this.yearOfBirth and  this.job. Then it takes as argument values to assign to the new object:
+
+Person(name,yearOfBirth,job) {}
+So name, yearOfBirth, job are these arguments, which you will pass to the constructor in your new Person statement:
+
+john = new Person('John',1990,'Doctor');
+
+Then the constructor assigns these values to the new object:
+
+this.name = name;
+this.yearOfBirth = yearOfBirth;
+this.job = job;
+So as you correctly assume, this.name is the property in the new object that we want to assign the value to, and name is the value we passed in as a parameter. this.name = name; therefore takes the argument, in this case 'John', and assigns it to the name property of the new object, this.name
+
+The this keyword tells JavaScript that we want to assign to the current object instance, in this case the john object that we are creating.
+
+And new is the keyword that tells JavaScript to construct this new object, using the Person blueprint/constructor.
+
+
+Prototype:
+
+None of this touches on the the prototype part of the deal. The prototype is a separate property of the object, so imagine that Person also carries with it a "tool box" with all its properties and methods. Some of these are then assigned values in the constructor as shown above, giving john his own copies of those, but the "tool box" may contain even more stuff than that.
+
+Now here is the deal: When you create john, he will have the same tool box assigned to him. The tools in it will know to work with john's properties, but he doesn't need his own tools, he shares this with Person and with all other persons created from it. And later, if you add tools to the Person.prototype, these new tools (methods and properties) are also available to john and mary and mark and all the others. And the Person prototype even inherits tools itself, from the Object object, and these are also available to john, mark and mary.
+
+So you as the programmer knows that all these methods and properties are available to you when working with any Person object, you do not have to create them in each. And only when they have unique values, like name, yearOfBirth and job do they need their own copies, if not they simply use the ones from Person.prototype, thus saving space and allowing you to update these in one place only, that is in the prototype of the blueprint which here is Person.
+
+But for now, your example do not touch on the contents of the tool box/prototype. It is still there, but you are only using the constructor. Follow the next lectures and you will se this in practise.
+
+
+2.
+Remember that the Constructor is just a blueprint that allows us to create objects.
+Remember also that the prototype property is just another property like it could be ''lastName".
+Now change the whole frase with the property "lasName":
+
+"The Constructor's lastName property is NOT the lastName of the Constructor itself, it's the lastName of ALL instance that are created through it".
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+definition of prototype:-
+
+The prototype is an object that is associated with every functions and objects by default in JavaScript.
+
+------------------------------------------------------------------------------------------------------------------------------
+1.
+Why prototypes are necessary:-
+
+If we define a method inside the constructor, like this:
+
+function Person(name, yearOfBirth) {
+  this.name = name;
+  this.yearOfBirth = yearOfBirth;
+  this.calcAge = function() {
+    return 2017 - this.yearOfBirth;
+  };
+}
+then every object created with Person constructor will have the calcAge() method as its own method.
+
+var john = new Person("John", 1990);
+var jane = new Person("Jane", 1999);
+var mike = new Person("Mike", 2000);
+ 
+console.log(john); // Person { name: 'John', yearOfBirth: 1990, calcAge: [Function] }
+console.log(jane); // Person { name: 'Jane', yearOfBirth: 1999, calcAge: [Function] }
+console.log(mike); // Person { name: 'Mike', yearOfBirth: 2000, calcAge: [Function] }
+As you can see, the calcAge method (calcAge: [Function]) is a property of each object created with Person constructor.
+
+It's not very efficient, because every object will have same methods, same code, so it will take more memory.
+
+Instead we can define this method inside the prototype  property of the Person constructor, like this:
+
+Person.prototype.calcAge = function() {
+  return 2017 - this.yearOfBirth;
+};
+Now, the calcAge() method is not a property of each object created with Person constructor, but every object can access this method (inherit) thanks to prototype chain:
+
+var john = new Person("John", 1990);
+var jane = new Person("Jane", 1999);
+var mike = new Person("Mike", 2000);
+ 
+console.log(john); // Person { name: 'John', yearOfBirth: 1990 }
+console.log(jane); // Person { name: 'Jane', yearOfBirth: 1999 }
+console.log(mike); // Person { name: 'Mike', yearOfBirth: 2000 }
+You can see that now, there's no calcAge method defined in these objects, because it's defined in the Person.prototype. It saves memory and it's more efficient, because there is only one place where this method is defined.
+
+You can still use calcAge() method on these objects thanks to prototype chain. When you call a method:
+
+console.log(john.calcAge()); 
+
+it will look for the calcAge() method in the john object, then (if there's no such a method) it will look for this method in the prototype, then in the prototype of prototype and so on. That's how the prototype chain works in simplification.
+
+This post about prototypes in JavaScript at my blog javascript-prototypes.
+
+2.
+It's more efficient to declare a method in the prototype, instead of directly assigning this method to a newly created object. This approach saves memory, because a method is declared only once and inherited by all instances, instead of being created for each instance separately. Moreover, it's faster to create a new instance like that, because it doesn't need to create this method while creating an object, instead it will be inherited.
+
+3.Remember, a prototype is not a method . A method can be a prototype, a variable can be a prototype etc.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+1.new vs object.create() :-
+
+"The Object.create() method creates a new object, using an existing object to provide the newly created object's __proto__ ."
+
+which means that the object passed as an argument to Object.create() method will be the prototype of this newly created object.
+
+There is a difference between Object.create(Person5.prototype) and Object.create(Person5). Person5 is a constructor function, which doesn't have any methods. Person5.prototype is the object with all methods we want our Athlete object to inherit.
+
+Also, as you can read on this great thread on Stack Overflow: "The performance difference has to do with the fact that constructor functions are highly optimized in most JS engines. There's really no practical reason that Object.create couldn't be as fast as constructor functions, it's just an implementation-dependent thing that will likely improve as time goes on."
+
+2.
+The main difference between the two approaches is how the prototype object gets set up. So, with the function constructor, the variables and methods defined in the constructor will be "directly" part of the new instance that you create with this constuctor. So for example:
+
+var Person = function(name, age) {
+this.name = name;
+this.age = age;
+}
+
+Person.prototype.printAge = function() {
+console.log(this.age);
+}
+
+var john = new Person("John", 30);
+
+console.log(john);
+
+If you run the following code you will see that name and age are the properties of the john object and the printAge function are part of the __proto__ object.
+
+IP-So each instance that you create with the function constuctor will hold the name and age properties (variables). With Object.create(), the variables and methods defined in the constuctor object will be immediately added to the __proto__ object. Run this code and you will see the difference:
+
+var person = {
+name: "John",
+age: 30
+}
+
+var john = Object.create(person);
+console.log(john);
+--
+
+
+3.Hopefully this example can clear up any confusion:
+
+function Dog(){
+    this.pupper = 'Pupper';
+};
+
+Dog.prototype.pupperino = 'Pups.';
+var maddie = new Dog();
+var buddy = Object.create(Dog.prototype);
+
+//Using Object.create()
+console.log(buddy.pupper); //Output is undefined
+console.log(buddy.pupperino); //Output is Pups.
+
+//Using New Keyword
+console.log(maddie.pupper); //Output is Pupper
+console.log(maddie.pupperino); //Output is Pups.
+
+The key thing to note in this example is:
+console.log(buddy.pupper); //Output is undefined
+
+Notice the output of buddy.pupper is undefined. Even though Object.create() sets its prototype to Dog, buddy does not have access to this.pupper in the constructor. This is due to the important difference that new Dog actually runs constructor code, whereas Object.create will not execute the constructor code.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Closures:-
+
+First ,scope chain  allows inner functions to access the variables and functions of its outer function. The inner and outer function both have access to the global execution context. Closures aren't a replacement for the scope chain, its just a way of taking advantage of the scope chain to write more concise and useful code. I'll try to demonstrate that in my example.
+
+Say the company where you work is writing a program to calculate how much of your paycheck to withhold for your benefits. Let's start with health insurance which is 20% of your paycheck. We'll set your paycheck to 2000 and write a function to calculate how much to withhold for health insurance:
+
+var paycheck = 2000;                        //declare our paycheck
+function healthInsurance(benefitRate) {     //create a function that accepts the current benefit rate
+  return paycheck * benefitRate;            //calculate the benefits
+}
+console.log(healthInsurance(.2));           //log to console using benefit rate of 20% or .2
+ 
+//RESULT: 400
+Ok great, the company will withhold 400 for health insurance. Now lets say this is only part of a much larger file of code. Somewhere along the way the person writing the code uses the same salary variable and sets it to 3000. Then the health insurance function is called again.
+
+var paycheck = 2000;                        //This is the same as before
+function healthInsurance(benefitRate) {
+  return paycheck * benefitRate;
+}
+console.log(healthInsurance(.2));
+//RESULT: 400
+ 
+paycheck = 3000;                            //Uh oh someone changed our variable...
+console.log(healthInsurance(.2));           //same function...
+//RESULT: 600                               //but now we have to pay more!
+Hey what gives! You're supposed to only pay 400 for health insurance but someone played with the salary variable and now you have to pay 600! I realize the example might seem silly but if you imagine a big project with thousands of lines of code, hundreds of variables, and dozens of functions, you can begin to see how a single variable could be accidentally used twice with different values and thereby produce the wrong result without you even knowing! 
+
+In order to prevent this, we'll use closures. Closures allow you to write a function with a variable, write other functions WITHIN that function which USE the variable, and due to the scope chain ensure that other functions on the outside cannot access or change that variable. For our example, it looks like this:
+
+function healthInsurance(paycheck) {      //This is our OUTER function
+  return function(benefitRate) {          //This is our INNER function
+    return paycheck * benefitRate;        //Inner function calculates the benefits
+  }
+}
+ 
+console.log(healthInsurance(2000)(.2));   //log to console using salary of 2000 and benefit rate of .2
+//RESULT: 400
+Doesn't seem all that different except we now have to pass both the salary and benefit rate when logging to the console unlike before where we had a variable with the salary already declared. We can expand on the functionality of this by adding a new variable that stores the salary we want to use.
+
+function healthInsurance(paycheck) {      //This is our OUTER function
+  return function(benefitRate) {          //This is our INNER function
+    return paycheck * benefitRate;        //Inner function calculates the benefits
+  }
+}
+ 
+var getHealthInsurance = healthInsurance(2000); 
+/*
+    Note: I'm calling this^ a variable but it's really the inner function with the paycheck 
+    value passed in. Written out it would look like this: 
+    var getHealthInsurance = function(benefitRate) {
+      return 2000 * benefitRate;
+    }
+*/
+ 
+console.log(getHealthInsurance(.2));
+//RETURNS: 400
+Ok so this gets us the same result. That may lead you to ask, why bother creating the new variable getHealthInsurance? Because we did more than create a new variable, we assigned the value 2000 to the paycheck variable in the original function. Another way of saying this is we used closures to enclose the value of 2000 in the inner function! Now no matter what you do with the getHealthInsurance variable, it will always retain the paycheck value of 2000! Even if you introduce another variable with the same name elsewhere in the code. 
+
+function healthInsurance(paycheck) {      //This is our OUTER function
+  return function(benefitRate) {          //This is our INNER function
+    return paycheck * benefitRate;        //Inner function calculates the benefits
+  }
+}
+ 
+var getHealthInsurance = healthInsurance(2000);
+ 
+var paycheck = 5000;                     //Introduced a new paycheck variable!
+ 
+console.log(getHealthInsurance(.2));
+//RETURNS: 400
+See! Even though we added a new variable for paycheck, the getHealthInsurance function ignored it because it is outside of the healthInsurance function's scope and therefore is not involved in the closure! 
+
+Ok so we've seen how closure can be used to keep a variable private and prevent it from being changed by variables or functions introduced outside the function's scope. The next logical question is why not just do this:
+
+function healthInsurance(benefitRate) {     //create a function that accepts the current benefit rate
+  var paycheck = 2000;                      //this used to be on the outside of the function
+  return paycheck * benefitRate;            //calculate the benefits
+}
+console.log(healthInsurance(.2));           //log to console using benefit rate of 20% or .2
+//RESULT: 400
+
+This is the same as the original function from above except we put the paycheck variable inside the function. Because of the scope chain it can now only be used by that function. Problem solved right? Well sure this would work if we only wanted one function but what if we wanted to use this function multiple times with different salaries? We'd have to write the same function over and over again, changing the value of the paycheck variable each time. So here we can use closures to maintain the Don't-Repeat-Yourself or DRY principle. Imagine we want to calculate health insurance for multiple employees
+
+function healthInsurance(paycheck) {      //This is our OUTER function
+  return function(benefitRate) {          //This is our INNER function
+    return paycheck * benefitRate;        //Inner function calculates the benefits
+  }
+}
+ 
+var getBillsHealthInsurance = healthInsurance(2000);
+var getSuesHealthInsurance = healthInsurance(1500);
+var getCarlsHealthInsurance = healthInsurance(3000);
+ 
+console.log(getBillsHealthInsurance(.2));
+//RETURNS: 400
+console.log(getSuesHealthInsurance(.2));
+//RETURNS: 300
+console.log(getCarlsHealthInsurance(.2));
+//RETURNS: 600
+
+Rather than write out the healthInsurance function three times and call it three times for each employee, we write it once, create variables which store each employee's salary (and cannot be accessed or changed by outside functions), and call those variables with the benefitRate we want to use! In addition, it doesn't matter what other functions or variables involving paycheck or benefitRate are created, we can use these new variables anywhere in our code and know that they'll always contain the same value. 
+
+So finally we see that closures can be used to declare and store a variable which cannot be accessed or changed thereby maintaining the integrity of our code. We also see they can be used as a template where you can store multiple values for that variable (as we did above) and then use those stored variables later on in your code!
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+FINANCIAL PLANNING APP
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Q  Is .id an inbuilt property or id is same as ID? I am still confused on .id part .
+
+To understand that concept we need to take a look at the data object and Income, Expense constructors:
+
+    var data = {
+        allItems: {
+            exp: [],
+            inc: []
+        },
+        totals: {
+            exp: 0,
+            inc: 0
+        },
+        budget: 0,
+        percentage: -1
+    };
+The exp and inc properties are arrays that will store newly created (based on Income or Expense constructors) objects.
+
+Constructors:
+
+    var Income = function(id, description, value) {
+        this.id = id;
+        this.description = description;
+        this.value = value;
+    };
+ 
+    var Expense = function(id, description, value) {
+        this.id = id;
+        this.description = description;
+        this.value = value;
+    };
+As you can see, each new object created with one of these constructors, will have following properties: id, description and value.
+
+Now, in the addItem method we create these new objects (with id property) and push it to exp or inc array):
+
+            // Create new item based on 'inc' or 'exp' type
+            if (type === 'exp') {
+                newItem = new Expense(ID, des, val);
+            } else if (type === 'inc') {
+                newItem = new Income(ID, des, val);
+            }
+ 
+            // Push it into our data structure
+            data.allItems[type].push(newItem);
+Let it be that we have created a couple of objects. The data object looks like:
+
+    var data = {
+        allItems: {
+            exp: [{id: 0, description: "Bought a car", value: "1000"}, {id: 1, description: "Food", value: "200"}],
+            inc: [{id: 0, description: "Sold a house", value: "150000"}, {id: 1, description: "Pay", value: "5000"}]
+        },
+        totals: {
+            exp: 0,
+            inc: 0
+        },
+        budget: 0,
+        percentage: -1
+    };
+ 
+The 'exp' and 'inc' arrays got filled with objects and each of these objects has the 'id' property that we can access(look at hte constructors from which they are derived). That's exactly what we're doing here:
+
+ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
+If we replace the "type" with "exp" or "inc", we access the 'exp' or 'inc' array and select the last object's id. We are adding 1 because we are selecting the id for NEXT value. So, +1 for this reason. 
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+2.
+
+There are two ways of accessing objects' properties
+
+1. The dot notation, for example, someObj.someProp
+
+2. The bracket notation, for example, someObj["someProp"]
+
+In this case, we need to use the bracket notation because the type is a variable (parameter) that stores the string, either "exp" or "inc".
+
+When we write, allitems[type] , the type variable will be replaced with "exp" or "inc", which will result in allitems["exp"] or allitems["inc"] .
+
+If we would write allitems.type, the type variable would not be replaced with the actual value ("exp" or "inc"). Instead, it would try to select the type property of the allItems object, which does not exist
+
+
+
+-------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
